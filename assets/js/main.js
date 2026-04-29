@@ -62,6 +62,12 @@ document.querySelectorAll('.cert-card').forEach((el, i) => {
   revealObserver.observe(el);
 });
 
+// Observe education cards
+document.querySelectorAll('.edu-card').forEach((el, i) => {
+  el.dataset.delay = i * 100;
+  revealObserver.observe(el);
+});
+
 // Observe generic data-animate elements
 document.querySelectorAll('[data-animate]').forEach((el, i) => {
   el.dataset.delay = el.dataset.delay || i * 60;
