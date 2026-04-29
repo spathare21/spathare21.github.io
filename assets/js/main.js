@@ -88,7 +88,7 @@ sections.forEach(s => sectionObserver.observe(s));
 // ---- Typed text effect in hero title ----
 const heroTitle = document.querySelector('.hero-title');
 if (heroTitle) {
-  const phrases = ['Senior SDET', 'Automation Architect', 'Quality Engineer', 'Test Strategist'];
+  const phrases = ['Staff Software Engineer (MTS 5)', 'Automation Architect', 'AI Automation Lead', 'Quality Engineer', 'Test Strategist'];
   let phraseIdx = 0;
   let charIdx = 0;
   let deleting = false;
