@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0d1117"/>
+
+  <!-- Subtle teal glow top-left -->
+  <radialGradient id="glow" cx="0%" cy="0%" r="70%">
+    <stop offset="0%" stop-color="#0abf8c" stop-opacity="0.15"/>
+    <stop offset="100%" stop-color="#0abf8c" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Left accent bar -->
+  <rect x="80" y="180" width="4" height="120" rx="2" fill="#0abf8c"/>
+
+  <!-- Name -->
+  <text x="108" y="242" font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="64" font-weight="800" fill="#e6edf3" letter-spacing="-1.5">
+    Sachin <tspan fill="#0abf8c">Pathare</tspan>
+  </text>
+
+  <!-- Title -->
+  <text x="110" y="296" font-family="'Fira Code', 'Courier New', monospace"
+    font-size="24" font-weight="400" fill="#8b949e" letter-spacing="0.5">
+    Staff Software Engineer (MTS 5) · Cohesity
+  </text>
+
+  <!-- Divider -->
+  <line x1="80" y1="328" x2="580" y2="328" stroke="#ffffff" stroke-opacity="0.07" stroke-width="1"/>
+
+  <!-- Tags -->
+  <text x="80" y="376" font-family="'Fira Code', 'Courier New', monospace"
+    font-size="18" fill="#0abf8c" letter-spacing="0.3">
+    AI Automation · Test Strategy · Team Leadership · CI/CD
+  </text>
+
+  <!-- Stats row -->
+  <text x="80" y="440" font-family="'Inter', sans-serif" font-size="36" font-weight="800" fill="#e6edf3">12+</text>
+  <text x="80" y="468" font-family="'Inter', sans-serif" font-size="14" fill="#8b949e" letter-spacing="1">YEARS EXP</text>
+
+  <text x="220" y="440" font-family="'Inter', sans-serif" font-size="36" font-weight="800" fill="#e6edf3">8+</text>
+  <text x="220" y="468" font-family="'Inter', sans-serif" font-size="14" fill="#8b949e" letter-spacing="1">ENGINEERS LED</text>
+
+  <text x="380" y="440" font-family="'Inter', sans-serif" font-size="36" font-weight="800" fill="#e6edf3">60%+</text>
+  <text x="380" y="468" font-family="'Inter', sans-serif" font-size="14" fill="#8b949e" letter-spacing="1">TRIAGE SAVED</text>
+
+  <!-- URL -->
+  <text x="80" y="555" font-family="'Fira Code', 'Courier New', monospace"
+    font-size="16" fill="#4d5566" letter-spacing="0.5">spathare21.github.io</text>
+
+  <!-- Right side avatar placeholder circle -->
+  <circle cx="980" cy="315" r="160" fill="#161b22" stroke="#0abf8c" stroke-width="2" stroke-opacity="0.4"/>
+  <text x="980" y="325" font-family="'Inter', sans-serif" font-size="72" font-weight="800"
+    fill="#0abf8c" text-anchor="middle" dominant-baseline="middle">SP</text>
+</svg>
