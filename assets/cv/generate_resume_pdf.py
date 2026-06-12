@@ -79,11 +79,19 @@ EXPERIENCE = [
     },
     {
         "role": "Red Hat India Pvt Ltd | Quality Engineer",
-        "time": "Nov 2016 - Jun 2019",
+        "time": "Nov 2017 - Jun 2019",
         "points": [
             "Automated RHEL i18n test scenarios in Python and OpenQA for 20+ locales across major releases.",
             "Built Selenium + Java automation for web UI systems and validated APIs with RestAssured.",
             "Contributed to open-source code and release test planning across product cycles.",
+        ],
+    },
+    {
+        "role": "Red Hat India Pvt Ltd | Associate Quality Engineer",
+        "time": "Nov 2016 - Oct 2017",
+        "points": [
+            "Contributed to test execution and automation coverage for Red Hat product releases in a Linux-native environment.",
+            "Supported i18n and web test validation efforts and collaborated with the team on release-quality checkpoints.",
         ],
     },
     {
@@ -191,7 +199,18 @@ def build_premium(output_file: str):
         ]],
         colWidths=[116 * mm, 62 * mm],
     )
-    header.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("ALIGN", (1, 0), (1, 0), "RIGHT"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0), ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]))
+    header.setStyle(
+        TableStyle(
+            [
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("TOPPADDING", (0, 0), (-1, -1), 0),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+            ]
+        )
+    )
     story.append(header)
     story.append(Spacer(1, 4))
     story.append(Paragraph(PROFILE["overview"], body_style))
