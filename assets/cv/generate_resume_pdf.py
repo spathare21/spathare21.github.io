@@ -1,5 +1,3 @@
-import shutil
-
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -149,20 +147,23 @@ def add_role(story, role, time, role_style, time_style, bullet_style, points):
 
 def build_premium(output_file: str):
     accent = colors.HexColor("#0B6E5E")
+    accent_soft = colors.HexColor("#E7F4F1")
     text = colors.HexColor("#111827")
-    muted = colors.HexColor("#374151")
+    muted = colors.HexColor("#4B5563")
+    border = colors.HexColor("#D1D5DB")
 
     def frame(canvas, doc):
         canvas.saveState()
-        canvas.setStrokeColor(accent)
-        canvas.setLineWidth(2)
-        canvas.line(doc.leftMargin, A4[1] - 16 * mm, A4[0] - doc.rightMargin, A4[1] - 16 * mm)
-        canvas.setStrokeColor(colors.HexColor("#D1D5DB"))
+        canvas.setFillColor(colors.HexColor("#F8FAFC"))
+        canvas.rect(0, A4[1] - 28 * mm, A4[0], 28 * mm, fill=1, stroke=0)
+        canvas.setFillColor(accent)
+        canvas.rect(doc.leftMargin - 4 * mm, 0, 2 * mm, A4[1], fill=1, stroke=0)
+        canvas.setStrokeColor(border)
         canvas.setLineWidth(0.6)
-        canvas.line(doc.leftMargin, 15 * mm, A4[0] - doc.rightMargin, 15 * mm)
+        canvas.line(doc.leftMargin, 14.5 * mm, A4[0] - doc.rightMargin, 14.5 * mm)
         canvas.setFont("Helvetica", 8)
         canvas.setFillColor(colors.HexColor("#6B7280"))
-        canvas.drawRightString(A4[0] - doc.rightMargin, 10.5 * mm, f"Page {doc.page}")
+        canvas.drawRightString(A4[0] - doc.rightMargin, 10 * mm, f"Page {doc.page}")
         canvas.restoreState()
 
     doc = SimpleDocTemplate(
@@ -170,26 +171,27 @@ def build_premium(output_file: str):
         pagesize=A4,
         leftMargin=14 * mm,
         rightMargin=14 * mm,
-        topMargin=20 * mm,
+        topMargin=18 * mm,
         bottomMargin=18 * mm,
         title="Sachin Pathare - Premium Resume",
         author=PROFILE["name"],
     )
 
     styles = getSampleStyleSheet()
-    name_style = ParagraphStyle("Name", parent=styles["Heading1"], fontName="Helvetica-Bold", fontSize=21, leading=24, textColor=text)
-    head_style = ParagraphStyle("Head", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=10.8, leading=13, textColor=accent)
-    contact_style = ParagraphStyle("Contact", parent=styles["Normal"], fontName="Helvetica", fontSize=9, leading=11, textColor=muted)
-    section_style = ParagraphStyle("Section", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=10, leading=12, textColor=colors.white, backColor=accent, leftIndent=4, rightIndent=4)
-    body_style = ParagraphStyle("Body", parent=styles["Normal"], fontName="Helvetica", fontSize=9.4, leading=12.2, textColor=text)
-    bullet_style = ParagraphStyle("Bullet", parent=styles["Normal"], fontName="Helvetica", fontSize=9.2, leading=12, textColor=text, leftIndent=8)
-    role_style = ParagraphStyle("Role", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=9.8, leading=12, textColor=text)
+    name_style = ParagraphStyle("Name", parent=styles["Heading1"], fontName="Helvetica-Bold", fontSize=23, leading=26, textColor=text)
+    headline_style = ParagraphStyle("Headline", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=11, leading=13.5, textColor=accent)
+    contact_style = ParagraphStyle("Contact", parent=styles["Normal"], fontName="Helvetica", fontSize=9, leading=11.2, textColor=muted)
+    section_style = ParagraphStyle("Section", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=10.4, leading=12.5, textColor=accent)
+    body_style = ParagraphStyle("Body", parent=styles["Normal"], fontName="Helvetica", fontSize=9.4, leading=12.6, textColor=text)
+    bullet_style = ParagraphStyle("Bullet", parent=styles["Normal"], fontName="Helvetica", fontSize=9.2, leading=12.4, textColor=text, leftIndent=8)
+    role_style = ParagraphStyle("Role", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=9.9, leading=12.2, textColor=text)
     time_style = ParagraphStyle("Time", parent=styles["Normal"], fontName="Helvetica", fontSize=8.8, leading=11, textColor=muted)
 
     story = []
-    header = Table(
+
+    header_table = Table(
         [[
-            [Paragraph(PROFILE["name"], name_style), Paragraph(PROFILE["headline"], head_style)],
+            [Paragraph(PROFILE["name"], name_style), Paragraph(PROFILE["headline"], headline_style)],
             [
                 Paragraph(PROFILE["location"], contact_style),
                 Paragraph(PROFILE["email"], contact_style),
@@ -199,7 +201,7 @@ def build_premium(output_file: str):
         ]],
         colWidths=[116 * mm, 62 * mm],
     )
-    header.setStyle(
+    header_table.setStyle(
         TableStyle(
             [
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -211,9 +213,46 @@ def build_premium(output_file: str):
             ]
         )
     )
-    story.append(header)
+    story.append(header_table)
     story.append(Spacer(1, 4))
-    story.append(Paragraph(PROFILE["overview"], body_style))
+
+    metrics = Table(
+        [["12+ Years", "7-8 Team", "60%+ Triage Savings"]],
+        colWidths=[58 * mm, 58 * mm, 62 * mm],
+    )
+    metrics.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), accent_soft),
+                ("TEXTCOLOR", (0, 0), (-1, -1), accent),
+                ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 9),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("BOX", (0, 0), (-1, -1), 0.7, border),
+                ("INNERGRID", (0, 0), (-1, -1), 0.6, border),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    story.append(metrics)
+    story.append(Spacer(1, 6))
+
+    summary_box = Table([[Paragraph(PROFILE["overview"], body_style)]], colWidths=[178 * mm])
+    summary_box.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.white),
+                ("BOX", (0, 0), (-1, -1), 0.6, border),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+                ("TOPPADDING", (0, 0), (-1, -1), 7),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+            ]
+        )
+    )
+    story.append(summary_box)
 
     section_block(story, "PROFESSIONAL SUMMARY", section_style)
     bullet_items(story, SUMMARY_POINTS, bullet_style)
@@ -223,17 +262,64 @@ def build_premium(output_file: str):
 
     section_block(story, "CORE SKILLS", section_style)
     for skill in SKILL_LINES:
-        story.append(Paragraph(skill, body_style))
-        story.append(Spacer(1, 1.5))
+        skill_box = Table([[Paragraph(skill, body_style)]], colWidths=[178 * mm])
+        skill_box.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), colors.white),
+                    ("BOX", (0, 0), (-1, -1), 0.5, border),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 4),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                ]
+            )
+        )
+        story.append(skill_box)
+        story.append(Spacer(1, 2))
 
     section_block(story, "PROFESSIONAL EXPERIENCE", section_style)
     for item in EXPERIENCE:
-        add_role(story, item["role"], item["time"], role_style, time_style, bullet_style, item["points"])
+        role_header = Table(
+            [[Paragraph(item["role"], role_style), Paragraph(item["time"], time_style)]],
+            colWidths=[110 * mm, 68 * mm],
+        )
+        role_header.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), accent_soft),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+                    ("BOX", (0, 0), (-1, -1), 0.6, border),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 5),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ]
+            )
+        )
+        story.append(role_header)
+        bullet_items(story, item["points"], bullet_style)
+        story.append(Spacer(1, 2))
 
     section_block(story, "EDUCATION AND CERTIFICATIONS", section_style)
-    story.append(Paragraph(EDUCATION, body_style))
-    story.append(Spacer(1, 1.5))
-    story.append(Paragraph(f"Certifications: {CERTIFICATIONS}", body_style))
+    edu_box = Table(
+        [[Paragraph(EDUCATION, body_style)], [Paragraph(f"Certifications: {CERTIFICATIONS}", body_style)]],
+        colWidths=[178 * mm],
+    )
+    edu_box.setStyle(
+        TableStyle(
+            [
+                ("BOX", (0, 0), (-1, -1), 0.6, border),
+                ("INNERGRID", (0, 0), (-1, -1), 0.4, border),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    story.append(edu_box)
 
     doc.build(story, onFirstPage=frame, onLaterPages=frame)
 
@@ -297,14 +383,6 @@ def build_ats(output_file: str):
 
 
 if __name__ == "__main__":
-    premium = "assets/cv/sachin-pathare-cv-premium.pdf"
-    ats = "assets/cv/sachin-pathare-cv-ats.pdf"
-    default = "assets/cv/sachin-pathare-cv.pdf"
-
-    build_premium(premium)
-    build_ats(ats)
-    shutil.copyfile(premium, default)
-
-    print(f"Generated {premium}")
-    print(f"Generated {ats}")
-    print(f"Updated {default} (premium default)")
+    output = "assets/cv/sachin-pathare-cv.pdf"
+    build_premium(output)
+    print(f"Generated {output}")
