@@ -303,6 +303,18 @@ img { max-width: 100%; display: block; }
   transform: translateY(-2px);
 }
 
+.btn-download-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  font-family: var(--font);
+}
+
+.btn-download-cv i {
+  font-size: 0.9rem;
+}
+
 .hero-socials {
   display: flex;
   gap: 1.5rem;
@@ -316,6 +328,101 @@ img { max-width: 100%; display: block; }
 .hero-socials a:hover {
   color: var(--teal);
   transform: translateY(-3px);
+}
+
+.contact-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Print-friendly CV export */
+@media print {
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  #navbar,
+  .hero-socials,
+  .scroll-hint,
+  .contact-actions,
+  footer {
+    display: none !important;
+  }
+
+  #hero {
+    min-height: auto;
+    padding: 1rem 0 0.5rem;
+  }
+
+  .hero-bg {
+    display: none;
+  }
+
+  .hero-avatar {
+    margin-bottom: 1rem;
+    box-shadow: none;
+    border-color: #999;
+  }
+
+  .hero-name,
+  .hero-title,
+  .section-title,
+  .tl-role {
+    color: #111 !important;
+  }
+
+  .hero-sub,
+  .section-label,
+  .tl-company,
+  .tl-date,
+  .cc-label,
+  .cc-value,
+  .stat-label,
+  .card-label,
+  .card-value,
+  .impact-lbl,
+  .cert-issuer,
+  .edu-institute,
+  .edu-year,
+  p,
+  li {
+    color: #333 !important;
+  }
+
+  .section,
+  .section-alt {
+    background: #fff !important;
+    padding: 1rem 0;
+  }
+
+  .timeline,
+  .skills-grid,
+  .certs-grid,
+  .domains-flex,
+  .edu-grid,
+  .contact-cards {
+    gap: 0.7rem;
+  }
+
+  .tl-card,
+  .skill-category,
+  .cert-card,
+  .edu-card,
+  .contact-card,
+  .info-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    background: #fff !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 }
 
 .scroll-hint {

@@ -2,7 +2,7 @@
 
 [![GitHub Pages](https://img.shields.io/badge/Live%20Site-GitHub%20Pages-0abf8c?style=flat-square&logo=github)](https://spathare21.github.io)
 
-Personal portfolio and resume website for **Sachin Pathare**, Senior SDET with 10+ years of experience.
+Personal portfolio and resume website for **Sachin Pathare**, Staff Software Engineer (MTS 5) with 12+ years of experience.
 
 ## 🌐 Live URL
 
@@ -16,6 +16,8 @@ https://spathare21.github.io
 spathare21.github.io/
 ├── index.html          # Main page
 ├── assets/
+│   ├── cv/
+│   │   └── sachin-pathare-cv.pdf
 │   ├── css/
 │   │   └── style.css   # All styles
 │   └── js/
