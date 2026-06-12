@@ -1,388 +1,518 @@
+"""
+Resume — Sachin Pathare
+Design: Clean two-column, senior professional grade
+Colour philosophy: near-zero colour — dark sidebar / white main / grey typography only
+"""
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase.pdfmetrics import stringWidth
+from reportlab.platypus import (
+    BaseDocTemplate, Frame, KeepTogether,
+    PageTemplate, Paragraph, Spacer, Table, TableStyle, Flowable,
+)
+
+# ── Page geometry ──────────────────────────────────────────────────────────────
+PAGE_W, PAGE_H = A4          # 595.28 × 841.89 pt
+SB_W   = 70 * mm             # sidebar width
+TOP_H  =  5 * mm             # top header band
+BOT_H  = 10 * mm             # bottom margin
+SB_PL  = 10 * mm             # sidebar left pad  — increased breathing room
+SB_PR  =  7 * mm             # sidebar right pad
+SB_IW  = SB_W - SB_PL - SB_PR          # ~53 mm inner
+MN_PL  =  8 * mm
+MN_PR  = 10 * mm
+MN_FX  = SB_W + MN_PL
+MN_FW  = PAGE_W - SB_W - MN_PL - MN_PR
+
+# ── Colour palette — near-zero colour ─────────────────────────────────────────
+# Sidebar
+SB_BG    = colors.HexColor("#1E293B")   # dark slate (no pure black = friendlier)
+SB_BAND  = colors.HexColor("#162130")   # slightly darker for top band
+SB_DIV   = colors.HexColor("#2D4055")   # subtle divider inside sidebar
+SB_WHITE = colors.HexColor("#F8FAFC")   # primary sidebar text (near-white)
+SB_LIGHT = colors.HexColor("#CBD5E1")   # secondary sidebar text (slate-300)
+SB_MUT   = colors.HexColor("#94A3B8")   # muted labels (slate-400)
+
+# Main
+M_BLACK  = colors.HexColor("#0F172A")   # headings / name / companies
+M_BODY   = colors.HexColor("#374151")   # body text / bullets
+M_MUT    = colors.HexColor("#6B7280")   # dates / tagline / tags
+M_RULE   = colors.HexColor("#E2E8F0")   # hairline dividers
+M_SECBG  = colors.HexColor("#F8FAFC")   # section header background (barely-there)
+M_SECDIV = colors.HexColor("#CBD5E1")   # section header bottom border
 
 
-PROFILE = {
-    "name": "Sachin Pathare",
-    "headline": "Staff SDET (MTS 5) | Quality Engineering and Test Automation",
-    "location": "Pune, India",
-    "email": "sachinvpathare@gmail.com",
-    "linkedin": "linkedin.com/in/sachin-pathare-b76b8496",
-    "github": "github.com/spathare21",
-    "overview": "12+ years of experience across SaaS, data security, cloud, fintech, and platform engineering. Strong focus on automation quality, release reliability, and scalable testing practices.",
-}
-
-SUMMARY_POINTS = [
-    "Staff SDET (MTS 5) owning quality engineering strategy for enterprise SaaS products, with deep experience in UI, API, mobile, and performance automation.",
-    "Built and scaled AI-assisted workflows for triage, test planning, and automation maintenance to improve engineering velocity and release confidence.",
-    "Managing a 7-8 member QA team across multiple squads with focus on predictable delivery, quality standards, and reduced escaped defects.",
-]
-
-TEAM_IMPACT_POINTS = [
-    "Managing and mentoring a 7-8 member QA team across squads to improve planning discipline and on-time quality delivery.",
-    "Established quality standards with review checklists, reusable automation patterns, and stronger Definition-of-Done alignment.",
-    "Addressed testing gaps using customer scenarios based on field and production issues.",
-    "Institutionalized monthly defect analysis and converted findings into preventive regression scenarios and framework updates.",
-]
-
-SKILL_LINES = [
-    "Automation: Selenium WebDriver, Robot Framework, Cypress, Appium, Pytest, JUnit, TestNG, Cucumber/BDD",
-    "Languages: Python, Java, JavaScript, SQL, Shell/Bash, Groovy",
-    "AI Workflows: LLM integrations, Cursor, Claude, GitHub Copilot, AI triage, AI test-plan generation",
-    "DevOps and Platforms: Jenkins, GoCD, Docker, Kubernetes, Terraform, Maven, Gradle, Linux",
-    "Performance and Security: Gatling, JMeter, load testing, stress testing, OWASP-focused validation",
-]
-
-EXPERIENCE = [
-    {
-        "role": "Cohesity | Staff SDET (MTS 5)",
-        "time": "Hybrid, Pune | Oct 2025 - Present",
-        "points": [
-            "Built AI-powered triage and test-plan workflows using LLM integrations, reducing manual triage effort by 60%+ across three product squads.",
-            "Standardized practical use of Cursor and Claude for automation scripting, test plan drafting, and triaging flaky automation failures.",
-            "Contributed to automation execution dashboards showing run history, stability trends, and failure insights for release decisions.",
-            "Contributed to MCP-based triage workflows to fetch automation history and notify failures using log scanning with email alerts.",
-            "Owned quality strategy for a data-protection SaaS platform spanning test plans, regression suites, and CI/CD-integrated frameworks.",
-        ],
-    },
-    {
-        "role": "Cohesity | Senior SDET (MTS 4)",
-        "time": "Hybrid, Pune | Jun 2023 - Sep 2025",
-        "points": [
-            "Built and scaled regression automation suites across multiple squads to improve release readiness.",
-            "Partnered with product and engineering teams to strengthen acceptance criteria, risk-based coverage, and release sign-off quality.",
-            "Introduced customer-scenario validation and defect pattern analysis to reduce escaped defects in subsequent releases.",
-        ],
-    },
-    {
-        "role": "Druva Data Solutions Pvt Ltd | Senior SDET",
-        "time": "Apr 2021 - Jun 2023",
-        "points": [
-            "Owned automation for Microsoft 365, Google Workspace, and Slack integrations using Robot Framework and Python.",
-            "Defined sprint-level test strategies and collaborated on acceptance criteria, desk checks, and release demos.",
-            "Improved automation coverage and reduced manual regression effort for cloud backup and recovery scenarios.",
-        ],
-    },
-    {
-        "role": "Thoughtworks Technologies India Pvt Ltd | Quality Analyst",
-        "time": "Jun 2019 - Mar 2021",
-        "points": [
-            "Delivered BDD automation using Java, Serenity, JUnit, and Gradle for client programs.",
-            "Implemented Gatling performance tests and identified API bottlenecks to improve response times.",
-            "Advanced shift-left quality through story kickoffs, acceptance criteria reviews, and desk checks.",
-        ],
-    },
-    {
-        "role": "Red Hat India Pvt Ltd | Quality Engineer",
-        "time": "Nov 2017 - Jun 2019",
-        "points": [
-            "Automated RHEL i18n test scenarios in Python and OpenQA for 20+ locales across major releases.",
-            "Built Selenium + Java automation for web UI systems and validated APIs with RestAssured.",
-            "Contributed to open-source code and release test planning across product cycles.",
-        ],
-    },
-    {
-        "role": "Red Hat India Pvt Ltd | Associate Quality Engineer",
-        "time": "Nov 2016 - Oct 2017",
-        "points": [
-            "Contributed to test execution and automation coverage for Red Hat product releases in a Linux-native environment.",
-            "Supported i18n and web test validation efforts and collaborated with the team on release-quality checkpoints.",
-        ],
-    },
-    {
-        "role": "Vertis Infotech | Software Engineer - Test",
-        "time": "Oct 2015 - Nov 2016",
-        "points": [
-            "Built an automation framework from scratch using Selenium, Java, and REST-Assured for UI and API testing.",
-            "Developed mobile SDK automation on Android and iOS using Appium.",
-        ],
-    },
-    {
-        "role": "PTC India | Software Engineer Intern",
-        "time": "Jun 2014 - Jun 2015",
-        "points": [
-            "Performed manual and automated validation for a PLM platform and supported regression cycles.",
-        ],
-    },
-]
-
-EDUCATION = "Bachelor of Engineering, Computer Engineering | University of Pune | 2010 - 2014"
-CERTIFICATIONS = "ISTQB, RHCSA, RHCE, Red Hat Certified in Containerized Application Development"
+# ── Canvas helpers ─────────────────────────────────────────────────────────────
+def _wrap(text, font, size, max_w):
+    words = text.split()
+    lines, cur = [], ""
+    for w in words:
+        probe = (cur + " " + w).strip()
+        if stringWidth(probe, font, size) <= max_w:
+            cur = probe
+        else:
+            if cur:
+                lines.append(cur)
+            cur = w
+    if cur:
+        lines.append(cur)
+    return lines or [""]
 
 
-def section_block(story, title, style):
-    story.append(Spacer(1, 5))
-    story.append(Paragraph(title, style))
-    story.append(Spacer(1, 3))
+def ctext(c, text, x, y, font, size, color, max_w=None, lh=None, align="left"):
+    """Draw text (wrapping + explicit \\n). Returns y after last line."""
+    lh = lh or size * 1.42
+    c.setFont(font, size)
+    c.setFillColor(color)
+    segments = text.split("\n")
+    all_lines = []
+    for seg in segments:
+        all_lines.extend(_wrap(seg, font, size, max_w) if max_w else [seg])
+    for ln in all_lines:
+        w = stringWidth(ln, font, size)
+        dx = {"center": -w / 2, "right": -w}.get(align, 0)
+        c.drawString(x + dx, y, ln)
+        y -= lh
+    return y
 
 
-def bullet_items(story, items, style):
-    for item in items:
-        story.append(Paragraph(f"&bull; {item}", style))
-        story.append(Spacer(1, 1.5))
+# ── Sidebar painter (canvas callback — runs every page) ───────────────────────
+def paint_sidebar(canvas, doc):
+    canvas.saveState()
+    c = canvas
 
+    # ── Full sidebar background ──────────────────────────────────────────────
+    c.setFillColor(SB_BG)
+    c.rect(0, 0, SB_W, PAGE_H, fill=1, stroke=0)
 
-def add_role(story, role, time, role_style, time_style, bullet_style, points):
-    table = Table([[Paragraph(role, role_style), Paragraph(time, time_style)]], colWidths=[118 * mm, 60 * mm])
-    table.setStyle(
-        TableStyle(
-            [
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("ALIGN", (1, 0), (1, 0), "RIGHT"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-                ("TOPPADDING", (0, 0), (-1, -1), 0),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-            ]
-        )
-    )
-    story.append(table)
-    story.append(Spacer(1, 2))
-    bullet_items(story, points, bullet_style)
-    story.append(Spacer(1, 2))
+    # ── Narrow top band (full width) — dark accent, NOT bright blue ──────────
+    c.setFillColor(SB_BAND)
+    c.rect(0, PAGE_H - TOP_H, PAGE_W, TOP_H, fill=1, stroke=0)
 
+    # ── Thin right edge of sidebar (1 pt, slightly lighter than bg) ──────────
+    c.setStrokeColor(SB_DIV)
+    c.setLineWidth(1)
+    c.line(SB_W, 0, SB_W, PAGE_H)
 
-def build_premium(output_file: str):
-    accent = colors.HexColor("#0B6E5E")
-    accent_soft = colors.HexColor("#E7F4F1")
-    text = colors.HexColor("#111827")
-    muted = colors.HexColor("#4B5563")
-    border = colors.HexColor("#D1D5DB")
+    # ── Page number in MAIN area (bottom right of each page) ─────────────────
+    c.setFont("Helvetica", 7.5)
+    c.setFillColor(M_MUT)
+    c.drawRightString(PAGE_W - MN_PR, 6 * mm, f"Page {doc.page}")
 
-    def frame(canvas, doc):
-        canvas.saveState()
-        canvas.setFillColor(colors.HexColor("#F8FAFC"))
-        canvas.rect(0, A4[1] - 28 * mm, A4[0], 28 * mm, fill=1, stroke=0)
-        canvas.setFillColor(accent)
-        canvas.rect(doc.leftMargin - 4 * mm, 0, 2 * mm, A4[1], fill=1, stroke=0)
-        canvas.setStrokeColor(border)
-        canvas.setLineWidth(0.6)
-        canvas.line(doc.leftMargin, 14.5 * mm, A4[0] - doc.rightMargin, 14.5 * mm)
-        canvas.setFont("Helvetica", 8)
-        canvas.setFillColor(colors.HexColor("#6B7280"))
-        canvas.drawRightString(A4[0] - doc.rightMargin, 10 * mm, f"Page {doc.page}")
+    # ── Sidebar content: page 1 only ─────────────────────────────────────────
+    if doc.page != 1:
         canvas.restoreState()
+        return
 
-    doc = SimpleDocTemplate(
+    x  = SB_PL
+    iw = SB_IW
+    cx = SB_W / 2
+    y  = PAGE_H - TOP_H - 6 * mm
+
+    # ── SECTION HELPER ───────────────────────────────────────────────────────
+    def sb_section(label):
+        nonlocal y
+        y -= 1.5 * mm
+        c.setFont("Helvetica-Bold", 8.5)
+        c.setFillColor(SB_WHITE)
+        c.drawString(x, y, label)
+        y -= 3.5 * mm
+        # thin full-width rule in muted colour
+        c.setStrokeColor(SB_DIV)
+        c.setLineWidth(0.6)
+        c.line(x, y, x + iw, y)
+        y -= 3.5 * mm
+
+    # ── DIVIDER HELPER ───────────────────────────────────────────────────────
+    def sb_div():
+        nonlocal y
+        y -= 2 * mm
+        c.setStrokeColor(SB_DIV)
+        c.setLineWidth(0.5)
+        c.line(x, y, x + iw, y)
+        y -= 3 * mm
+
+    # ── PHOTO ────────────────────────────────────────────────────────────────
+    r = 11 * mm
+    c.saveState()
+    p = c.beginPath()
+    p.circle(cx, y - r, r)
+    c.clipPath(p, stroke=0, fill=0)
+    c.drawImage(ImageReader("assets/images/avatar.jpg"),
+                cx - r, y - r * 2, width=r * 2, height=r * 2, mask="auto")
+    c.restoreState()
+    c.setStrokeColor(SB_WHITE)
+    c.setLineWidth(1.5)
+    c.circle(cx, y - r, r, fill=0, stroke=1)
+    y -= r * 2 + 6 * mm        # photo → name: 6 mm gap
+
+    # ── NAME ─────────────────────────────────────────────────────────────────
+    y = ctext(c, "Sachin Pathare", cx, y, "Helvetica-Bold", 14.5, SB_WHITE,
+              align="center")
+    y -= 0.5 * mm              # name → role: tight
+
+    # ── ROLE ─────────────────────────────────────────────────────────────────
+    y = ctext(c, "Staff SDET  (MTS 5)", cx, y, "Helvetica-Bold", 8.5, SB_LIGHT,
+              align="center")
+    y -= 0.8 * mm              # role → tagline: tight
+
+    # ── TAGLINE ──────────────────────────────────────────────────────────────
+    y = ctext(c, "12+ Years  |  Quality Engineering", cx, y,
+              "Helvetica", 7.5, SB_MUT, align="center")
+    y -= 2 * mm
+
+    sb_div()
+
+    # ── CONTACT ──────────────────────────────────────────────────────────────
+    sb_section("CONTACT")
+    contacts = [
+        ("Email",    "sachinvpathare@gmail.com"),
+        ("LinkedIn", "sachin-pathare-b76b8496"),
+        ("GitHub",   "github.com/spathare21"),
+        ("Website",  "spathare21.github.io"),
+        ("Location", "Pune, India"),
+    ]
+    for lbl, val in contacts:
+        # label — capture return so y moves past the label bottom
+        y = ctext(c, lbl.upper(), x, y, "Helvetica-Bold", 6.8, SB_MUT)
+        y -= 0.8 * mm          # small gap: label bottom → value top
+        # value — slightly indented, bright white
+        y = ctext(c, val, x + 2, y, "Helvetica", 8.2, SB_LIGHT, iw - 2, 3.3 * mm)
+        y -= 3 * mm            # gap between contact items
+    y -= 1 * mm
+
+    sb_div()
+
+    # ── TECHNICAL SKILLS ─────────────────────────────────────────────────────
+    sb_section("TECHNICAL SKILLS")
+    skills = [
+        ("Automation",
+         "Selenium, Robot FW, Cypress, Appium\nPytest, JUnit, TestNG, Cucumber/BDD"),
+        ("Languages",
+         "Python, Java, JavaScript, SQL\nShell/Bash, Groovy"),
+        ("AI & LLM",
+         "LLM Integration, Cursor, Claude\nCopilot, Prompt Engineering"),
+        ("DevOps & CI/CD",
+         "Jenkins, GoCD, Docker, Kubernetes\nTerraform, Git, Maven, AWS"),
+        ("Performance & Security",
+         "Gatling, JMeter, Load/Stress Testing\nOWASP Validation"),
+    ]
+    for idx, (cat, vals) in enumerate(skills):
+        # subtle separator before every category except the first
+        if idx > 0:
+            y -= 1 * mm
+            c.setStrokeColor(SB_DIV)
+            c.setLineWidth(0.4)
+            c.line(x, y, x + iw, y)
+            y -= 2.5 * mm      # clear gap after separator
+        y = ctext(c, cat, x, y, "Helvetica-Bold", 8.5, SB_WHITE)
+        y -= 0.8 * mm          # gap: category label bottom → values
+        y = ctext(c, vals, x, y, "Helvetica", 7.8, SB_LIGHT, iw, 3.2 * mm)
+        y -= 1 * mm
+    y -= 1.5 * mm
+
+    sb_div()
+
+    # ── EDUCATION ────────────────────────────────────────────────────────────
+    sb_section("EDUCATION")
+    edu = [
+        ("MCA — Master of Comp. Applications",
+         "D.Y. Patil Institute, Pune",
+         "Savitribai Phule Pune University",
+         "2012 – 2015"),
+        ("B.Sc. — Computer Science",
+         "MIT College of Engineering, Pune",
+         "Pune University",
+         "2008 – 2011"),
+    ]
+    for deg, school, board, years in edu:
+        y = ctext(c, deg,    x, y, "Helvetica-Bold", 8.2, SB_WHITE, iw, 3.3 * mm)
+        y -= 0.5 * mm
+        y = ctext(c, school, x, y, "Helvetica",      7.8, SB_LIGHT, iw, 3.2 * mm)
+        y = ctext(c, board,  x, y, "Helvetica",      7.2, SB_MUT,   iw, 3 * mm)
+        y = ctext(c, years,  x, y, "Helvetica-Bold", 8,   SB_WHITE)
+        y -= 5.5 * mm
+
+    sb_div()
+
+    # ── CERTIFICATIONS ───────────────────────────────────────────────────────
+    sb_section("CERTIFICATIONS")
+    certs = [
+        "ISTQB — Foundation Level",
+        "RHCSA & RHCE — Red Hat",
+        "Red Hat: Containerised App Dev",
+    ]
+    for cert in certs:
+        # small dash bullet drawn as a rect
+        c.setFillColor(SB_MUT)
+        c.rect(x, y + 3, 6, 1, fill=1, stroke=0)
+        y = ctext(c, cert, x + 9, y, "Helvetica", 8.2, SB_LIGHT, iw - 9, 3.3 * mm)
+        y -= 3 * mm
+
+    canvas.restoreState()
+
+
+# ── Main column flowables ──────────────────────────────────────────────────────
+class SectionHeader(Flowable):
+    """Bold heading + thin bottom rule — no distracting background colour."""
+    def __init__(self, text, iw):
+        super().__init__()
+        self._text = text
+        self._iw   = iw
+        self.height = 18
+        self.width  = iw
+
+    def wrap(self, aw, ah):
+        return self._iw, self.height
+
+    def draw(self):
+        # Very subtle off-white background strip — barely visible
+        self.canv.setFillColor(M_SECBG)
+        self.canv.rect(0, 0, self._iw, self.height, fill=1, stroke=0)
+        # Thin dark left accent bar (2.5 pt)
+        self.canv.setFillColor(M_BLACK)
+        self.canv.rect(0, 0, 2.5, self.height, fill=1, stroke=0)
+        # Section label
+        self.canv.setFont("Helvetica-Bold", 9.5)
+        self.canv.setFillColor(M_BLACK)
+        self.canv.drawString(9, 5, self._text)
+        # Bottom hairline
+        self.canv.setStrokeColor(M_SECDIV)
+        self.canv.setLineWidth(0.5)
+        self.canv.line(0, 0, self._iw, 0)
+
+
+class ThinRule(Flowable):
+    def __init__(self, w, color=M_RULE, t=0.5):
+        super().__init__()
+        self.width = w; self.color = color; self.t = t
+        self.height = t + 1.5
+
+    def draw(self):
+        self.canv.setStrokeColor(self.color)
+        self.canv.setLineWidth(self.t)
+        self.canv.line(0, 0, self.width, 0)
+
+
+# ── Paragraph styles ──────────────────────────────────────────────────────────
+def make_styles():
+    base = getSampleStyleSheet()
+    def S(name, **kw):
+        return ParagraphStyle(name, parent=kw.pop("parent", base["Normal"]), **kw)
+    return {
+        "name":    S("Nm",  fontName="Helvetica-Bold",    fontSize=26,  leading=30, textColor=M_BLACK),
+        "role":    S("Rl",  fontName="Helvetica-Bold",    fontSize=11,  leading=15, textColor=M_BLACK),
+        "tagline": S("Tl",  fontName="Helvetica",         fontSize=8.5, leading=12, textColor=M_MUT),
+        "summary": S("Su",  fontName="Helvetica",         fontSize=8.8, leading=13.5, textColor=M_BODY),
+        "co":      S("Co",  fontName="Helvetica-Bold",    fontSize=9,   leading=12, textColor=M_BLACK),
+        "period":  S("Pe",  fontName="Helvetica",         fontSize=8.5, leading=11, textColor=M_MUT),
+        "jobrole": S("Jr",  fontName="Helvetica-Bold",    fontSize=10,  leading=13, textColor=M_BLACK),
+        "promo":   S("Pr",  fontName="Helvetica-Oblique", fontSize=7.5, leading=10, textColor=M_MUT),
+        "bullet":  S("Bu",  fontName="Helvetica",         fontSize=8.5, leading=12.5, textColor=M_BODY,
+                     leftIndent=11, firstLineIndent=-9),
+        "tags":    S("Ta",  fontName="Helvetica",         fontSize=7,   leading=10, textColor=M_MUT),
+    }
+
+
+# ── Experience entry builder ───────────────────────────────────────────────────
+def job_block(job, st, iw):
+    items = []
+    loc = f"  ·  {job['loc']}" if job.get("loc") else ""
+
+    # Company + period row
+    pw = 34 * mm
+    cw = iw - pw
+    hdr = Table(
+        [[Paragraph(f"{job['company']}{loc}", st["co"]),
+          Paragraph(job["period"], st["period"])]],
+        colWidths=[cw, pw],
+    )
+    hdr.setStyle(TableStyle([
+        ("VALIGN",        (0, 0), (-1, -1), "BOTTOM"),
+        ("ALIGN",         (1, 0), (1, 0),   "RIGHT"),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 0),
+        ("TOPPADDING",    (0, 0), (-1, -1), 0),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    items.append(hdr)
+    items.append(Spacer(1, 1.2 * mm))
+    items.append(Paragraph(job["role"], st["jobrole"]))
+
+    if job.get("promo"):
+        items.append(Spacer(1, 0.8 * mm))
+        items.append(Paragraph(f"Promoted:  {job['promo']}", st["promo"]))
+
+    items.append(Spacer(1, 2.5 * mm))
+    items.append(ThinRule(iw, M_RULE, 0.5))
+    items.append(Spacer(1, 2.5 * mm))
+
+    for pt in job["points"]:
+        items.append(Paragraph(f"–  {pt}", st["bullet"]))
+        items.append(Spacer(1, 1.5 * mm))
+
+    if job.get("tags"):
+        items.append(Spacer(1, 1.5 * mm))
+        items.append(Paragraph("  /  ".join(job["tags"]), st["tags"]))
+
+    return KeepTogether(items)
+
+
+# ── Resume data ───────────────────────────────────────────────────────────────
+SUMMARY = (
+    "Staff SDET with <b>12+ years</b> building enterprise-grade quality at scale across SaaS, "
+    "data security, cloud, fintech, and platform domains. Led <b>7–8 member QA teams</b> across "
+    "multiple squads, established AI-powered triage and test-plan workflows cutting manual effort "
+    "by <b>60%+</b>, and consistently delivered measurable improvements to release quality and "
+    "engineering standards. Treats automation code as production-quality deliverable."
+)
+
+JOBS = [
+    {
+        "role":    "Staff SDET (MTS 5)",
+        "promo":   "MTS 4 (Jun 2023)  >>  MTS 5 (Oct 2025)",
+        "company": "Cohesity",
+        "loc":     "Hybrid, Pune",
+        "period":  "Jun 2023 – Present",
+        "tags":    ["AI Automation", "Team Leadership", "CI/CD", "Data Security SaaS"],
+        "points": [
+            "Led and mentored a <b>7–8 member QA team</b> across 3 product squads, improving planning discipline, Definition-of-Done alignment, and on-time quality delivery.",
+            "Architected an <b>AI-powered test triage system and automated test-plan generator</b> using LLM integrations, reducing manual triage effort by <b>60%+</b> and accelerating release cycles.",
+            "Standardised practical use of <b>Cursor and Claude</b> for automation scripting, test-plan drafting, and flaky-failure triage — establishing org-wide AI usage standards for QA.",
+            "Contributed <b>MCP-based triage workflows</b>: fetching automation history, scanning logs, and delivering actionable failure notifications via email alerts.",
+            "Built an automation <b>execution dashboard</b> surfacing run history, stability trends, and failure insights to improve release confidence across all squads.",
+            "Established monthly <b>defect pattern analysis</b> to convert field/production issues into preventive regression scenarios and framework improvements.",
+            "Owned end-to-end quality strategy for a data-protection SaaS platform: test plans, automation frameworks, regression suites, and CI/CD-integrated pipelines.",
+        ],
+    },
+    {
+        "role":    "Senior SDET",
+        "promo":   None,
+        "company": "Druva Data Solutions Pvt Ltd",
+        "loc":     "",
+        "period":  "Apr 2021 – Jun 2023",
+        "tags":    ["Robot Framework", "Python", "M365", "Google Workspace"],
+        "points": [
+            "Owned end-to-end automation for <b>Microsoft 365, Google Workspace, and Slack</b> integrations using Robot Framework and Python — covering cloud backup and recovery scenarios.",
+            "Defined sprint-level test strategies; collaborated with POs and engineers on acceptance criteria, desk checks, and release demos.",
+            "Improved automation coverage and significantly reduced manual regression effort across integration releases.",
+        ],
+    },
+    {
+        "role":    "Quality Analyst",
+        "promo":   None,
+        "company": "Thoughtworks Technologies India Pvt Ltd",
+        "loc":     "",
+        "period":  "Jun 2019 – Mar 2021",
+        "tags":    ["BDD", "Java", "Serenity", "Gatling", "Shift-Left"],
+        "points": [
+            "Delivered <b>BDD automation</b> (Java, Serenity, JUnit, Gradle) for McKinsey &amp; GPN client programs; championed shift-left quality through story kickoffs, acceptance criteria, and desk checks.",
+            "Implemented <b>Gatling performance test suite</b>; identified API bottlenecks that drove measurable improvements in system response times.",
+            "Contributed to unit and integration testing alongside developers, treating quality as a shared team responsibility.",
+        ],
+    },
+    {
+        "role":    "Quality Engineer",
+        "promo":   "Associate QE (Nov 2016)  >>  Quality Engineer (Nov 2017)",
+        "company": "Red Hat India Pvt Ltd",
+        "loc":     "",
+        "period":  "Nov 2016 – Jun 2019",
+        "tags":    ["Python", "Selenium", "OpenQA", "i18n/L10n", "Open Source"],
+        "points": [
+            "Automated <b>RHEL i18n test scenarios</b> in Python and OpenQA, validating 20+ locales across major Red Hat product releases.",
+            "Built Selenium + Java automation for Zanata, Transtats, and Satellite web UIs; validated REST APIs with RestAssured.",
+            "Contributed open-source code to Transtats and Zanata projects; maintained test plans across product release cycles.",
+        ],
+    },
+    {
+        "role":    "Software Engineer – Test",
+        "promo":   None,
+        "company": "Vertis Infotech",
+        "loc":     "",
+        "period":  "Oct 2015 – Nov 2016",
+        "tags":    ["Selenium", "Java", "REST-Assured", "Appium", "Fintech"],
+        "points": [
+            "Designed and built a <b>Selenium + Java + REST-Assured automation framework from scratch</b> for a fintech/payments product — covering end-to-end UI flows, API contract validation, and payment transaction scenarios.",
+            "Developed <b>mobile SDK test automation</b> for Android and iOS using Appium, validating cross-platform SDK behaviour across multiple device configurations.",
+            "Executed structured test cases for payment flows, session handling, and error boundary scenarios; actively managed defects through the full lifecycle in JIRA.",
+            "Participated in sprint ceremonies, release readiness reviews, and exploratory testing sessions to ensure quality across agile delivery cycles.",
+        ],
+    },
+    {
+        "role":    "Software Engineer – Intern",
+        "promo":   None,
+        "company": "PTC India",
+        "loc":     "",
+        "period":  "Jun 2014 – Jun 2015",
+        "tags":    ["PLM", "Manual Testing", "Test Design", "QA Fundamentals"],
+        "points": [
+            "Performed manual and automated validation for a <b>PLM (Product Lifecycle Management)</b> platform; planned and executed regression test cycles covering key product workflows.",
+            "Authored test cases, test plans, and defect reports using standardised QA documentation practices, ensuring traceability from requirements to test coverage.",
+            "Collaborated with senior QA engineers and developers to translate product requirements into structured test scenarios and identify edge cases.",
+            "Gained foundational experience in software QA processes, defect lifecycle management, test design techniques, and agile team participation.",
+        ],
+    },
+]
+
+
+# ── Main story ────────────────────────────────────────────────────────────────
+def build_story(st, iw):
+    s = []
+
+    # Name
+    s.append(Paragraph("Sachin Pathare", st["name"]))
+    s.append(Spacer(1, 2 * mm))
+    # Role — same dark colour as name, slightly smaller
+    s.append(Paragraph("Staff SDET (MTS 5)", st["role"]))
+    s.append(Spacer(1, 1.5 * mm))
+    # Tagline — muted, one line
+    s.append(Paragraph("Quality Engineering  ·  AI Test Automation  ·  Pune, India", st["tagline"]))
+    s.append(Spacer(1, 3 * mm))
+    # Clean thin rule — dark grey, NOT bright blue
+    s.append(ThinRule(iw, M_BLACK, 1))
+    s.append(Spacer(1, 5 * mm))
+
+    # Summary
+    s.append(SectionHeader("PROFESSIONAL SUMMARY", iw))
+    s.append(Spacer(1, 3 * mm))
+    s.append(Paragraph(SUMMARY, st["summary"]))
+    s.append(Spacer(1, 6 * mm))
+
+    # Experience
+    s.append(SectionHeader("PROFESSIONAL EXPERIENCE", iw))
+    s.append(Spacer(1, 4 * mm))
+
+    for i, job in enumerate(JOBS):
+        s.append(job_block(job, st, iw))
+        if i < len(JOBS) - 1:
+            s.append(Spacer(1, 4.5 * mm))
+
+    return s
+
+
+# ── Build PDF ─────────────────────────────────────────────────────────────────
+def build_resume(output_file: str):
+    st = make_styles()
+    doc = BaseDocTemplate(
         output_file,
         pagesize=A4,
-        leftMargin=14 * mm,
-        rightMargin=14 * mm,
-        topMargin=18 * mm,
-        bottomMargin=18 * mm,
-        title="Sachin Pathare - Premium Resume",
-        author=PROFILE["name"],
+        title="Sachin Pathare — Resume",
+        author="Sachin Pathare",
     )
-
-    styles = getSampleStyleSheet()
-    name_style = ParagraphStyle("Name", parent=styles["Heading1"], fontName="Helvetica-Bold", fontSize=23, leading=26, textColor=text)
-    headline_style = ParagraphStyle("Headline", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=11, leading=13.5, textColor=accent)
-    contact_style = ParagraphStyle("Contact", parent=styles["Normal"], fontName="Helvetica", fontSize=9, leading=11.2, textColor=muted)
-    section_style = ParagraphStyle("Section", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=10.4, leading=12.5, textColor=accent)
-    body_style = ParagraphStyle("Body", parent=styles["Normal"], fontName="Helvetica", fontSize=9.4, leading=12.6, textColor=text)
-    bullet_style = ParagraphStyle("Bullet", parent=styles["Normal"], fontName="Helvetica", fontSize=9.2, leading=12.4, textColor=text, leftIndent=8)
-    role_style = ParagraphStyle("Role", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=9.9, leading=12.2, textColor=text)
-    time_style = ParagraphStyle("Time", parent=styles["Normal"], fontName="Helvetica", fontSize=8.8, leading=11, textColor=muted)
-
-    story = []
-
-    header_table = Table(
-        [[
-            [Paragraph(PROFILE["name"], name_style), Paragraph(PROFILE["headline"], headline_style)],
-            [
-                Paragraph(PROFILE["location"], contact_style),
-                Paragraph(PROFILE["email"], contact_style),
-                Paragraph(PROFILE["linkedin"], contact_style),
-                Paragraph(PROFILE["github"], contact_style),
-            ],
-        ]],
-        colWidths=[116 * mm, 62 * mm],
+    frame = Frame(
+        x1=MN_FX, y1=BOT_H,
+        width=MN_FW, height=PAGE_H - TOP_H - BOT_H,
+        id="main", showBoundary=0,
+        leftPadding=0, rightPadding=0,
+        topPadding=5 * mm, bottomPadding=0,
     )
-    header_table.setStyle(
-        TableStyle(
-            [
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("ALIGN", (1, 0), (1, 0), "RIGHT"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 0),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 0),
-                ("TOPPADDING", (0, 0), (-1, -1), 0),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-            ]
-        )
-    )
-    story.append(header_table)
-    story.append(Spacer(1, 4))
-
-    metrics = Table(
-        [["12+ Years", "7-8 Team", "60%+ Triage Savings"]],
-        colWidths=[58 * mm, 58 * mm, 62 * mm],
-    )
-    metrics.setStyle(
-        TableStyle(
-            [
-                ("BACKGROUND", (0, 0), (-1, -1), accent_soft),
-                ("TEXTCOLOR", (0, 0), (-1, -1), accent),
-                ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
-                ("FONTSIZE", (0, 0), (-1, -1), 9),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("BOX", (0, 0), (-1, -1), 0.7, border),
-                ("INNERGRID", (0, 0), (-1, -1), 0.6, border),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ]
-        )
-    )
-    story.append(metrics)
-    story.append(Spacer(1, 6))
-
-    summary_box = Table([[Paragraph(PROFILE["overview"], body_style)]], colWidths=[178 * mm])
-    summary_box.setStyle(
-        TableStyle(
-            [
-                ("BACKGROUND", (0, 0), (-1, -1), colors.white),
-                ("BOX", (0, 0), (-1, -1), 0.6, border),
-                ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-                ("TOPPADDING", (0, 0), (-1, -1), 7),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-            ]
-        )
-    )
-    story.append(summary_box)
-
-    section_block(story, "PROFESSIONAL SUMMARY", section_style)
-    bullet_items(story, SUMMARY_POINTS, bullet_style)
-
-    section_block(story, "TEAM MANAGEMENT AND QUALITY IMPACT", section_style)
-    bullet_items(story, TEAM_IMPACT_POINTS, bullet_style)
-
-    section_block(story, "CORE SKILLS", section_style)
-    for skill in SKILL_LINES:
-        skill_box = Table([[Paragraph(skill, body_style)]], colWidths=[178 * mm])
-        skill_box.setStyle(
-            TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, -1), colors.white),
-                    ("BOX", (0, 0), (-1, -1), 0.5, border),
-                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
-                    ("TOPPADDING", (0, 0), (-1, -1), 4),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-                ]
-            )
-        )
-        story.append(skill_box)
-        story.append(Spacer(1, 2))
-
-    section_block(story, "PROFESSIONAL EXPERIENCE", section_style)
-    for item in EXPERIENCE:
-        role_header = Table(
-            [[Paragraph(item["role"], role_style), Paragraph(item["time"], time_style)]],
-            colWidths=[110 * mm, 68 * mm],
-        )
-        role_header.setStyle(
-            TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, -1), accent_soft),
-                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                    ("ALIGN", (1, 0), (1, 0), "RIGHT"),
-                    ("BOX", (0, 0), (-1, -1), 0.6, border),
-                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
-                    ("TOPPADDING", (0, 0), (-1, -1), 5),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-                ]
-            )
-        )
-        story.append(role_header)
-        bullet_items(story, item["points"], bullet_style)
-        story.append(Spacer(1, 2))
-
-    section_block(story, "EDUCATION AND CERTIFICATIONS", section_style)
-    edu_box = Table(
-        [[Paragraph(EDUCATION, body_style)], [Paragraph(f"Certifications: {CERTIFICATIONS}", body_style)]],
-        colWidths=[178 * mm],
-    )
-    edu_box.setStyle(
-        TableStyle(
-            [
-                ("BOX", (0, 0), (-1, -1), 0.6, border),
-                ("INNERGRID", (0, 0), (-1, -1), 0.4, border),
-                ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ]
-        )
-    )
-    story.append(edu_box)
-
-    doc.build(story, onFirstPage=frame, onLaterPages=frame)
-
-
-def build_ats(output_file: str):
-    doc = SimpleDocTemplate(
-        output_file,
-        pagesize=A4,
-        leftMargin=16 * mm,
-        rightMargin=16 * mm,
-        topMargin=16 * mm,
-        bottomMargin=16 * mm,
-        title="Sachin Pathare - ATS Resume",
-        author=PROFILE["name"],
-    )
-
-    styles = getSampleStyleSheet()
-    name_style = ParagraphStyle("ATSName", parent=styles["Heading1"], fontName="Helvetica-Bold", fontSize=18, leading=21)
-    role_style = ParagraphStyle("ATSRole", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=10.5, leading=13)
-    section_style = ParagraphStyle("ATSSection", parent=styles["Heading2"], fontName="Helvetica-Bold", fontSize=10.2, leading=12)
-    body_style = ParagraphStyle("ATSBody", parent=styles["Normal"], fontName="Helvetica", fontSize=9.5, leading=12.4)
-    bullet_style = ParagraphStyle("ATSBullet", parent=styles["Normal"], fontName="Helvetica", fontSize=9.3, leading=12, leftIndent=10)
-    role_hdr_style = ParagraphStyle("ATSRoleHdr", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=9.7, leading=12)
-    time_style = ParagraphStyle("ATSTime", parent=styles["Normal"], fontName="Helvetica", fontSize=9.1, leading=11)
-
-    story = []
-    story.append(Paragraph(PROFILE["name"], name_style))
-    story.append(Paragraph(PROFILE["headline"], role_style))
-    story.append(Paragraph(f"{PROFILE['location']} | {PROFILE['email']} | {PROFILE['linkedin']} | {PROFILE['github']}", body_style))
-    story.append(Spacer(1, 4))
-    story.append(Paragraph(PROFILE["overview"], body_style))
-
-    story.append(Spacer(1, 5))
-    story.append(Paragraph("PROFESSIONAL SUMMARY", section_style))
-    bullet_items(story, SUMMARY_POINTS, bullet_style)
-
-    story.append(Spacer(1, 5))
-    story.append(Paragraph("TEAM MANAGEMENT AND QUALITY IMPACT", section_style))
-    bullet_items(story, TEAM_IMPACT_POINTS, bullet_style)
-
-    story.append(Spacer(1, 5))
-    story.append(Paragraph("CORE SKILLS", section_style))
-    for skill in SKILL_LINES:
-        story.append(Paragraph(skill, body_style))
-        story.append(Spacer(1, 1.2))
-
-    story.append(Spacer(1, 5))
-    story.append(Paragraph("PROFESSIONAL EXPERIENCE", section_style))
-    for item in EXPERIENCE:
-        story.append(Paragraph(item["role"], role_hdr_style))
-        story.append(Paragraph(item["time"], time_style))
-        bullet_items(story, item["points"], bullet_style)
-
-    story.append(Spacer(1, 5))
-    story.append(Paragraph("EDUCATION AND CERTIFICATIONS", section_style))
-    story.append(Paragraph(EDUCATION, body_style))
-    story.append(Spacer(1, 1.2))
-    story.append(Paragraph(f"Certifications: {CERTIFICATIONS}", body_style))
-
-    doc.build(story)
+    doc.addPageTemplates([PageTemplate(id="R", frames=[frame], onPage=paint_sidebar)])
+    doc.build(build_story(st, MN_FW))
+    print(f"✓  {output_file}")
 
 
 if __name__ == "__main__":
-    output = "assets/cv/sachin-pathare-cv.pdf"
-    build_premium(output)
-    print(f"Generated {output}")
+    build_resume("assets/cv/sachin-pathare-cv.pdf")

@@ -192,7 +192,19 @@ img { max-width: 100%; display: block; }
 .hero-gradient {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 90% 55% at 50% 0%, rgba(10,191,140,0.10) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -5%, rgba(10,191,140,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(10,191,140,0.05) 0%, transparent 60%);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(10,191,140,0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  opacity: 0.4;
 }
 
 .hero-content {
@@ -203,13 +215,19 @@ img { max-width: 100%; display: block; }
 }
 
 .hero-avatar {
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   overflow: hidden;
   margin: 0 auto 1.75rem;
   border: 2px solid var(--teal);
-  box-shadow: 0 0 0 5px rgba(10,191,140,0.12);
+  box-shadow: 0 0 0 5px rgba(10,191,140,0.12), 0 0 20px rgba(10,191,140,0.08);
+  animation: avatar-glow 3s ease-in-out infinite;
+}
+
+@keyframes avatar-glow {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(10,191,140,0.12), 0 0 20px rgba(10,191,140,0.08); }
+  50% { box-shadow: 0 0 0 8px rgba(10,191,140,0.18), 0 0 40px rgba(10,191,140,0.15); }
 }
 .hero-avatar img {
   width: 100%;
@@ -653,7 +671,15 @@ img { max-width: 100%; display: block; }
   color: var(--teal);
   white-space: nowrap;
 }
-.tl-badge.current { background: rgba(10,191,140,0.1); }
+.tl-badge.current {
+  background: rgba(10,191,140,0.1);
+  animation: badge-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(10,191,140,0); }
+  50% { box-shadow: 0 0 8px 2px rgba(10,191,140,0.25); }
+}
 
 .tl-promo {
   font-size: 0.8rem;
@@ -961,10 +987,12 @@ img { max-width: 100%; display: block; }
    ============================================================ */
 .edu-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  max-width: 700px;
+  max-width: 900px;
 }
+
+@media (max-width: 720px) { .edu-grid { grid-template-columns: 1fr; } }
 
 .edu-card {
   display: flex;
